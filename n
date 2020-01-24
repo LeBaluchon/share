@@ -1,0 +1,53 @@
+const Discord = require('discord.js');
+const https = require('https');
+
+module.exports.run = (client, message, args) => {
+    let args2 = message.content.split(' ');
+        console.log(args2[0]);
+        let serveur = args2[1];
+        let pseudo1 = args2[2];
+
+    https.get(`https://nostale.alnmrc.com/api/players/fr/${serveur}/${pseudo1}`, function(res){
+        let body = '';
+        res.on('data', function(chunk){
+        body += chunk;
+        });
+        res.on('end', function(){
+        let result = JSON.parse(body);
+        const serv = result.server;
+        let pseudo = result.nickname;
+
+        let lvl = result.level_ranking.level;
+        let exp = result.level_ranking.experience;
+        let rangLvl = result.level_ranking.rank;
+
+        let lvlH = result.champion_ranking.level;
+        let expH = result.champion_ranking.experience;
+        let rangH = result.champion_ranking.rank;
+
+        let réputation = result.fame_ranking.fame;
+        let rangRéputation = result.fame_ranking.rank;
+
+        let rangPvp = result.pvp_ranking.rank;
+        let ratioPvp = result.pvp_ranking.ratio;
+        let kills = result.pvp_ranking.kills;
+        let deads = result.pvp_ranking.deads;
+
+        message.channel.send({
+            embed: {
+              color: 4868682,
+              title: "**Statistiques du joueur** " + (pseudo) + " **du serveur** " + (serv) + " **:**",
+              description: `__**Statistiques de combat :**__\nNiveau de combat : ${lvl}\nExpérience acquise : ${exp}\nRang dans le classement : ${rangLvl}\n\n__**Statistiques héroïques :**__\nNiveau héroïque : ${lvlH}\nExpérience acquise : ${expH}\nRang dans le classement : ${rangH}\n\n__**Statistiques de réputation :**__\nRéputation acquise : ${réputation}\nRang dans le classement : ${rangRéputation}\n\n__**Statistiques en PvP :**__\nKills : ${kills} **|** Deads ${deads}\nRatio : ${ratioPvp}\nRang dans le classement : ${rangPvp}`,
+            }
+          });
+        });
+
+        }).on('error', function(e){
+            console.log("Got an error: ", e);
+        
+    });
+
+};
+module.exports.help = {
+    name: 'n'
+};
